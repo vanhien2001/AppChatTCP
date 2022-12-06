@@ -86,7 +86,10 @@ namespace ClientAppChat
 
         private void Form_Closing(Object sender, FormClosingEventArgs e)
         {
-            client.Close();
+            if(client != null)
+            {
+                client.Close();
+            }
         }
     }
 }

@@ -62,7 +62,10 @@ namespace ClientAppChat
                                 if(fCreateConversation != null)
                                 {
                                     MessageBox.Show(res.message, "");
-                                    fCreateConversation.Close();
+                                    fCreateConversation.BeginInvoke(new MethodInvoker(() =>
+                                    {
+                                        fCreateConversation.Close();
+                                    }));
                                 }
                                 this.getListConversation();
                             }
@@ -74,7 +77,10 @@ namespace ClientAppChat
                                 if (res.success)
                                 {
                                     MessageBox.Show(res.message, "");
-                                    fAddMember.Close();
+                                    fAddMember.BeginInvoke(new MethodInvoker(() =>
+                                    {
+                                        fAddMember.Close();
+                                    }));
                                 }
                                 else MessageBox.Show("Fail!\n" + res.message, "Error");
                             }
@@ -142,11 +148,11 @@ namespace ClientAppChat
             {
                 flowLayoutPanel.Controls.Clear();
                 flowLayoutPanel.Padding = new Padding(5);
+                btnAddMember.Enabled = false;
+                btnSend.Enabled = false;
+                LabelConversation.AutoSize = false;
+                LabelConversation.TextAlign = ContentAlignment.MiddleRight;
             }));
-            btnAddMember.Enabled = false;
-            btnSend.Enabled = false;
-            LabelConversation.AutoSize = false;
-            LabelConversation.TextAlign = ContentAlignment.MiddleRight;
             List<Conversation> conversations = new List<Conversation>();
             conversations = JsonSerializer.Deserialize<List<Conversation>>(data);
             foreach (var conversation in conversations)
@@ -174,11 +180,11 @@ namespace ClientAppChat
             flowLayoutMessage.BeginInvoke(new MethodInvoker(() =>
             {
                 flowLayoutMessage.Controls.Clear();
+                txtMessage.Focus();
+                LabelConversation.Text = conversation.Name;
+                btnAddMember.Enabled = true;
+                btnSend.Enabled = true;
             }));
-            txtMessage.Focus();
-            LabelConversation.Text = conversation.Name;
-            btnAddMember.Enabled = true;
-            btnSend.Enabled = true;
             foreach (var message in conversation.messages)
             {
                 if (message.user.Id == user.Id)
