@@ -30,10 +30,14 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormSubmit>({ resolver: yupResolver(schema) });
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const [error, setError] = useState('');
   const homeNavigation = useNavigation<HomeScreenNavigationProp>();
+
   const onSubmit = async (data: LoginFormSubmit) => {
+    console.log(IP_ADDRESS);
+    setIsLoading(true);
     authTcp.login(data, async resData => {
       if (resData.success) {
         if (resData.data) {
@@ -47,14 +51,17 @@ const Login = () => {
           );
         }
         homeNavigation.navigate('Home');
+        setIsLoading(false);
       } else {
         setError(resData.message);
+        setIsLoading(false);
       }
     });
   };
 
   return (
     <LoginLayout
+      isLoading={isLoading}
       error={error}
       errors={errors}
       control={control}

@@ -14,6 +14,7 @@ import {
   IconButton,
   CloseIcon,
   Text,
+  Divider,
 } from 'native-base';
 import { Controller, Control, FieldErrorsImpl } from 'react-hook-form';
 import { LoginFormSubmit } from '..';
@@ -26,17 +27,21 @@ interface ILoginLayout {
   errors: Partial<FieldErrorsImpl<LoginFormSubmit>>;
   control: Control<LoginFormSubmit, any>;
   handleSubmit: (event: GestureResponderEvent) => void;
+  isLoading: boolean;
 }
 
 const LoginLayout: FC<ILoginLayout> = props => {
-  const { error, errors, control, handleSubmit } = props;
+  const { error, errors, control, handleSubmit, isLoading } = props;
   const authNavigate = useNavigation<AuthScreenNavigationProp>();
 
   return (
     <SafeAreaView>
-      <View>
+      <View style={tw`bg-white`}>
         <Center style={tw`h-full`}>
           <Box w="100%" style={tw`px-10`}>
+            <Box>
+              <Text style={tw`text-center text-5xl font-bold`}>Login</Text>
+            </Box>
             <Box>
               <Stack mx="4">
                 <Box style={tw`mb-5`}>
@@ -78,6 +83,7 @@ const LoginLayout: FC<ILoginLayout> = props => {
                 </Box>
                 <Box style={tw`mb-5`}>
                   <FormControl
+                    isDisabled={isLoading}
                     isInvalid={errors.username?.message !== '' ? true : false}>
                     <FormControl.Label>Username</FormControl.Label>
                     <Controller
@@ -85,6 +91,7 @@ const LoginLayout: FC<ILoginLayout> = props => {
                       control={control}
                       render={({ field: { onChange, onBlur, value } }) => (
                         <Input
+                          size="l"
                           value={value}
                           onChangeText={onChange}
                           onBlur={onBlur}
@@ -100,13 +107,14 @@ const LoginLayout: FC<ILoginLayout> = props => {
                   </FormControl>
                 </Box>
                 <Box style={tw`mb-7`}>
-                  <FormControl isInvalid>
+                  <FormControl isDisabled={isLoading} isInvalid>
                     <FormControl.Label>Password</FormControl.Label>
                     <Controller
                       name="password"
                       control={control}
                       render={({ field: { onChange, onBlur, value } }) => (
                         <Input
+                          size="l"
                           onChangeText={onChange}
                           onBlur={onBlur}
                           value={value}
@@ -122,11 +130,18 @@ const LoginLayout: FC<ILoginLayout> = props => {
                   </FormControl>
                 </Box>
                 <Box>
-                  <Button onPress={handleSubmit}>Submit</Button>
+                  <Button isLoading={isLoading} onPress={handleSubmit}>
+                    Submit
+                  </Button>
                 </Box>
-
                 <Box style={tw`mt-7`}>
-                  <Button onPress={() => authNavigate.navigate('Register')}>
+                  <Divider />
+                </Box>
+                <Box style={tw`mt-7`}>
+                  <Button
+                    isDisabled={isLoading}
+                    colorScheme="success"
+                    onPress={() => authNavigate.navigate('Register')}>
                     Create an Account
                   </Button>
                 </Box>

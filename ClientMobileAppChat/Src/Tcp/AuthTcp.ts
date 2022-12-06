@@ -10,6 +10,7 @@ const authTcp = {
     const options = {
       port: PORT,
       host: IP_ADDRESS,
+      localHost: IP_ADDRESS,
     };
 
     const client = TcpSocket.createConnection(options, () => {
@@ -51,7 +52,6 @@ const authTcp = {
     client.on('close', () => {
       console.log('Connection closed!');
     });
-
     client.destroy();
   },
 
