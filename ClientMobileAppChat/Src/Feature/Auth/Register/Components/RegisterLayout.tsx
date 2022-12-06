@@ -12,6 +12,7 @@ import {
   View,
   IconButton,
   VStack,
+  Divider,
 } from 'native-base';
 import React, { FC } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -35,10 +36,13 @@ const RegisterLayout: FC<IRegisterLayout> = props => {
 
   return (
     <SafeAreaView>
-      <View style={tw`text-black`}>
+      <View style={tw`text-black bg-white`}>
         <Center style={tw`h-full`}>
           <Box w="100%" style={tw`px-10`}>
             <Stack>
+              <Box>
+                <Text style={tw`text-center text-5xl font-bold`}>Register</Text>
+              </Box>
               <Box style={tw`mb-5`}>
                 {error && (
                   <Alert maxW="400" status="error">
@@ -85,6 +89,7 @@ const RegisterLayout: FC<IRegisterLayout> = props => {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <Input
+                        size="l"
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
@@ -106,6 +111,7 @@ const RegisterLayout: FC<IRegisterLayout> = props => {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <Input
+                        size="l"
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
@@ -127,6 +133,7 @@ const RegisterLayout: FC<IRegisterLayout> = props => {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <Input
+                        size="l"
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
@@ -148,6 +155,7 @@ const RegisterLayout: FC<IRegisterLayout> = props => {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <Input
+                        size="l"
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
@@ -165,10 +173,14 @@ const RegisterLayout: FC<IRegisterLayout> = props => {
                 <Box>
                   <Button onPress={handleSubmit}>Submit</Button>
                 </Box>
-
                 <Box style={tw`mt-7`}>
-                  <Button onPress={() => authNavigate.navigate('Login')}>
-                    Create an Account
+                  <Divider />
+                </Box>
+                <Box style={tw`mt-7`}>
+                  <Button
+                    colorScheme="success"
+                    onPress={() => authNavigate.navigate('Login')}>
+                    Already have an account
                   </Button>
                 </Box>
               </Box>
