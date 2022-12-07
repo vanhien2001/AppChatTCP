@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import TcpSocket from 'react-native-tcp-socket';
 
 export interface IUserState {
   current: {
@@ -6,18 +7,30 @@ export interface IUserState {
     Email?: string;
     Name?: string;
     Id?: number;
+    client?: TcpSocket.Socket;
   };
+
   error?: any;
 }
 
 const initialState: IUserState = {
-  current: { isLogIn: false, Email: '', Name: undefined, Id: undefined },
+  current: {
+    isLogIn: false,
+    Email: '',
+    Name: undefined,
+    Id: undefined,
+    client: undefined,
+  },
 };
 
 export const AuthSlice = createSlice({
-  name: 'products',
+  name: 'auth',
   initialState,
   reducers: {
+    setClient: (state, action: PayloadAction<TcpSocket.Socket>) => {
+      state.current.client = action.payload;
+    },
+
     logIn: (
       state,
       action: PayloadAction<{
@@ -41,6 +54,6 @@ export const AuthSlice = createSlice({
   },
 });
 
-export const { logIn, logOut } = AuthSlice.actions;
+export const { logIn, logOut, setClient } = AuthSlice.actions;
 
 export default AuthSlice.reducer;
