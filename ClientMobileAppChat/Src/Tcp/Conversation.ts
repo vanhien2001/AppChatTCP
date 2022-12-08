@@ -1,106 +1,73 @@
-import { IP_ADDRESS, PORT } from '../Constants/IpAddress';
-import TcpSocket from 'react-native-tcp-socket';
+import authTcp from './AuthTcp';
+import { store } from '../Context/store';
 
 const conversationTcp = {
-  createConversation: (
-    data: { username: string; password: string },
-    receiveDataFunc: (parseResData: any) => void,
-  ) => {
-    const options = {
-      port: PORT,
-      host: IP_ADDRESS,
-    };
-
-    const client = TcpSocket.createConnection(options, () => {
-      const { username, password } = data;
-      const object = {
-        action: 'CreateConversation',
-        data: { UserName: username, Password: password },
-      };
-
-      const decodeObject = {
-        action: 'CreateConversation',
-        data: JSON.stringify(object.data),
-      };
-      client.write(JSON.stringify(decodeObject));
-    });
-
-    client.on('connect', () => {
-      console.log('connected successfully');
-    });
-
-    client.on('drain', () => {
-      console.log('drain');
-    });
-
-    client.on('data', async data => {
-      console.log('receive message');
-      const resData = JSON.parse(data.toString());
-
-      if (resData.success) {
-        const parseResData = { ...resData, data: JSON.parse(resData.data) };
-        receiveDataFunc(parseResData);
-      }
-    });
-
-    client.on('error', error => {
-      console.log('error : ' + error);
-    });
-
-    client.on('close', () => {
-      console.log('Connection closed!');
-    });
-
-    client.destroy();
-  },
-
-  getConversationByUserId: (
-    data: number,
-    receiveDataFunc: (parseResData: any) => void,
-  ) => {
-    const options = {
-      port: PORT,
-      host: IP_ADDRESS,
-    };
-
-    const client = TcpSocket.createConnection(options, () => {
+  createConversation: async (data: { username: string; password: string }) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
       const object = {
         action: 'CreateConversation',
         data,
       };
 
       const decodeObject = {
-        action: 'CreateConversation',
+        action: object.action,
         data: JSON.stringify(object.data),
       };
-      client.write(JSON.stringify(decodeObject));
-    });
+      await clientTcp.write(JSON.stringify(decodeObject));
+    }
+  },
 
-    client.on('connect', () => {
-      console.log('connected successfully');
-    });
+  getConversationByUserId: async (data: number) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
+      const object = {
+        action: 'GetConversationByIdUser',
+        data,
+      };
 
-    client.on('drain', () => {
-      console.log('drain');
-    });
+      const decodeObject = {
+        action: object.action,
+        data: JSON.stringify(object.data),
+      };
+      await clientTcp.write(JSON.stringify(decodeObject));
+    }
+  },
 
-    client.on('data', async data => {
-      console.log('receive message');
-      const resData = JSON.parse(data.toString());
+  getConversationById: async (data: number) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
+      const object = {
+        action: 'GetConversationById',
+        data,
+      };
 
-      if (resData.success) {
-        const parseResData = { ...resData, data: JSON.parse(resData.data) };
-        receiveDataFunc(parseResData);
-      }
-    });
+      const decodeObject = {
+        action: object.action,
+        data: JSON.stringify(object.data),
+      };
+      await clientTcp.write(JSON.stringify(decodeObject));
+    }
+  },
 
-    client.on('error', error => {
-      console.log('error : ' + error);
-    });
+  sendMessage: async (data: {
+    ConversationId: number;
+    user: { Id: number };
+    Text: string;
+  }) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
+      const object = {
+        action: 'SendMessage',
+        data,
+      };
 
-    client.on('close', () => {
-      console.log('Connection closed!');
-    });
+      const decodeObject = {
+        action: object.action,
+        data: JSON.stringify(object.data),
+      };
+      await clientTcp.write(JSON.stringify(decodeObject));
+    }
   },
 };
 

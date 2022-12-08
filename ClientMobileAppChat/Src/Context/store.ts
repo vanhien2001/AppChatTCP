@@ -16,13 +16,20 @@ import {
 } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authReducer from './slices/authSlice';
+import conversationReducer from './slices/conversationSlice';
+import messageReducer from './slices/messageSlice';
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  blacklist: ['conversation', 'message'],
 };
 
-const rootReducer = combineReducers({ auth: authReducer });
+const rootReducer = combineReducers({
+  auth: authReducer,
+  conversation: conversationReducer,
+  message: messageReducer,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

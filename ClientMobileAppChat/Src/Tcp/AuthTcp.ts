@@ -1,6 +1,11 @@
 import TcpSocket from 'react-native-tcp-socket';
 import { IP_ADDRESS, PORT } from '../Constants/IpAddress';
+import { setConversation } from '../Context/slices/conversationSlice';
+import { pushMessage, setMessage } from '../Context/slices/messageSlice';
+import { store } from '../Context/store';
 import IResLogin from '../Interface/ResLogin';
+
+let temp: TcpSocket.Socket;
 
 const authTcp = {
   login: (
@@ -10,7 +15,6 @@ const authTcp = {
     const options = {
       port: PORT,
       host: IP_ADDRESS,
-      localHost: IP_ADDRESS,
     };
 
     const client = TcpSocket.createConnection(options, () => {
@@ -19,9 +23,8 @@ const authTcp = {
         action: 'Login',
         data: { UserName: username, Password: password },
       };
-
       const decodeObject = {
-        action: 'Login',
+        action: object.action,
         data: JSON.stringify(object.data),
       };
       client.write(JSON.stringify(decodeObject));
@@ -38,10 +41,27 @@ const authTcp = {
     client.on('data', async data => {
       console.log('receive message');
       const resData = JSON.parse(data.toString());
-
       if (resData.success) {
-        const parseResData = { ...resData, data: JSON.parse(resData.data) };
-        receiveDataFunc(parseResData);
+        console.log(resData);
+        const temp = JSON.parse(resData.data);
+        switch (resData.action) {
+          case 'GetConversationByIdUser':
+            store.dispatch(setConversation(temp));
+            break;
+
+          case 'GetConversationById':
+            store.dispatch(setMessage(temp));
+            break;
+
+          case 'SendMessage':
+            store.dispatch(pushMessage(temp));
+            break;
+
+          case 'Login':
+            const parseResData = { ...resData, data: JSON.parse(resData.data) };
+            receiveDataFunc(parseResData);
+            break;
+        }
       }
     });
 
@@ -52,7 +72,12 @@ const authTcp = {
     client.on('close', () => {
       console.log('Connection closed!');
     });
-    client.destroy();
+    temp = client;
+  },
+
+  getClient: () => {
+    // store.dispatch(setClient(temp));
+    return temp;
   },
 
   register: (
@@ -92,8 +117,6 @@ const authTcp = {
     });
 
     client.on('data', async data => {
-      console.log(data.toString());
-      console.log('receive message');
       const resData = JSON.parse(data.toString());
 
       if (resData.success) {
