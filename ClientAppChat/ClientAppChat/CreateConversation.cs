@@ -22,19 +22,37 @@ namespace ClientAppChat
             this.user = user;
             this.client = client;
             InitializeComponent();
+            txtInfor.GotFocus += txtInforFocus;
+            txtName.GotFocus += txtNameFocus;
         }
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
-            if (txtName.Text != "")
+            if (txtName.Text == "" && txtInfor.Text == "")
             {
-                Action action = new Action(client);
-                action.CreateConversation(txtName.Text, user);
+                MessageBox.Show("Please enter name or infor user", "Notice");
             }
             else
             {
-                MessageBox.Show("Please enter name", "Notice");
+                Action action = new Action(client);
+                if (txtName.Text == "")
+                {
+                    action.CreateConversationPrivate(user.Id, txtInfor.Text);
+                } else if (txtInfor.Text == "")
+                {
+                    action.CreateConversation(txtName.Text, user);
+                }
             }
+        }
+
+        private void txtNameFocus(object sender, EventArgs e)
+        {
+            txtInfor.Text = "";
+        }
+
+        private void txtInforFocus(object sender, EventArgs e)
+        {
+            txtName.Text = "";
         }
     }
 }

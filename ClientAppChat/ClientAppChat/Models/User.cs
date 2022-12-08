@@ -6,19 +6,21 @@ namespace ClientAppChat.Models
     public class User
     {
         public User() { }
-        public User(int id, string name, string userName, string password, string email)
+        public User(int id, string name, string userName, string password, string phoneNumber, string email)
         {
             this.Id = id;
             this.Name = name;
             this.UserName = userName;
             this.Password = password;
+            this.PhoneNumber = phoneNumber;
             this.Email = email;
         }
-        public User(string name, string userName, string password, string email)
+        public User(string name, string userName, string password, string phoneNumber, string email)
         {
             this.Name = name;
             this.UserName = userName;
             this.Password = password;
+            this.PhoneNumber = phoneNumber;
             this.Email = email;
         }
         public User(string userName, string password)
@@ -30,6 +32,7 @@ namespace ClientAppChat.Models
         public string Name { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public string PhoneNumber { get; set; }
         public string Email { get; set; }
     }
 }

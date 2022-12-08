@@ -10,7 +10,7 @@ namespace ClientAppChat
     {
         Socket client;
         IPEndPoint iep;
-        string IP= "172.31.192.1", Port = "6969";
+        string IP= "192.168.1.127", Port = "6969";
         public FormSignIn()
         {
             InitializeComponent();

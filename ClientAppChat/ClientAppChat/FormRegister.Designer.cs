@@ -32,13 +32,15 @@
             this.btnRegister = new System.Windows.Forms.Button();
             this.btnLogin = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.txtPhone = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label3
@@ -54,7 +56,7 @@
             // 
             // btnRegister
             // 
-            this.btnRegister.Location = new System.Drawing.Point(71, 361);
+            this.btnRegister.Location = new System.Drawing.Point(71, 407);
             this.btnRegister.Name = "btnRegister";
             this.btnRegister.Size = new System.Drawing.Size(190, 30);
             this.btnRegister.TabIndex = 12;
@@ -64,7 +66,7 @@
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(71, 397);
+            this.btnLogin.Location = new System.Drawing.Point(71, 443);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(190, 30);
             this.btnLogin.TabIndex = 11;
@@ -77,16 +79,16 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(71, 278);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 20);
+            this.label2.Size = new System.Drawing.Size(111, 20);
             this.label2.TabIndex = 10;
-            this.label2.Text = "Email :";
+            this.label2.Text = "Phone Number:";
             // 
-            // txtEmail
+            // txtPhone
             // 
-            this.txtEmail.Location = new System.Drawing.Point(71, 301);
-            this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(190, 27);
-            this.txtEmail.TabIndex = 9;
+            this.txtPhone.Location = new System.Drawing.Point(71, 301);
+            this.txtPhone.Name = "txtPhone";
+            this.txtPhone.Size = new System.Drawing.Size(190, 27);
+            this.txtPhone.TabIndex = 9;
             // 
             // label1
             // 
@@ -136,11 +138,29 @@
             this.txtName.Size = new System.Drawing.Size(190, 27);
             this.txtName.TabIndex = 14;
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(71, 339);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 20);
+            this.label6.TabIndex = 19;
+            this.label6.Text = "Email :";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(71, 362);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(190, 27);
+            this.textBox1.TabIndex = 18;
+            // 
             // FormRegister
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(332, 453);
+            this.ClientSize = new System.Drawing.Size(332, 499);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtUsername);
             this.Controls.Add(this.label5);
@@ -149,7 +169,7 @@
             this.Controls.Add(this.btnRegister);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.txtEmail);
+            this.Controls.Add(this.txtPhone);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtPassword);
             this.Name = "FormRegister";
@@ -166,12 +186,14 @@
         private Button btnRegister;
         private Button btnLogin;
         private Label label2;
-        private TextBox txtEmail;
+        private TextBox txtPhone;
         private Label label1;
         private TextBox txtPassword;
         private Label label4;
         private TextBox txtUsername;
         private Label label5;
         private TextBox txtName;
+        private Label label6;
+        private TextBox textBox1;
     }
 }

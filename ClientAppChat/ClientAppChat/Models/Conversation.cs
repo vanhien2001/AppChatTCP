@@ -10,11 +10,12 @@ namespace ClientAppChat.Models
     public class Conversation
     {
         public Conversation() { }
-        public Conversation(int id, string name, User user, DateTime dateCreate, List<Message> messages, List<GroupMember> groupMembers)
+        public Conversation(int id, string name, User user, Boolean group, DateTime dateCreate, List<Message> messages, List<GroupMember> groupMembers)
         {
             this.Id = id;
             this.Name = name;
             this.user = user;
+            this.Group = group;
             this.dateCreate = dateCreate;
             this.messages = messages;
             this.groupMembers = groupMembers;
@@ -27,6 +28,7 @@ namespace ClientAppChat.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public User user { get; set; }
+        public Boolean Group { get; set; }
         public DateTime dateCreate { get; set; }
         public List<Message> messages { get; set; }
         public List<GroupMember> groupMembers { get; set; }

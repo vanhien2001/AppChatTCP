@@ -36,6 +36,8 @@
             this.btnAddMember = new System.Windows.Forms.Button();
             this.flowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.flowLayoutMessage = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnInformation = new System.Windows.Forms.Button();
+            this.txtSearch = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // LableName
@@ -50,7 +52,7 @@
             // 
             // txtMessage
             // 
-            this.txtMessage.Location = new System.Drawing.Point(254, 411);
+            this.txtMessage.Location = new System.Drawing.Point(254, 437);
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.Size = new System.Drawing.Size(457, 27);
             this.txtMessage.TabIndex = 1;
@@ -58,7 +60,7 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(717, 409);
+            this.btnSend.Location = new System.Drawing.Point(717, 435);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(94, 29);
             this.btnSend.TabIndex = 2;
@@ -80,7 +82,7 @@
             // 
             // btnCreate
             // 
-            this.btnCreate.Location = new System.Drawing.Point(12, 411);
+            this.btnCreate.Location = new System.Drawing.Point(12, 437);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(222, 27);
             this.btnCreate.TabIndex = 5;
@@ -90,11 +92,11 @@
             // 
             // btnAddMember
             // 
-            this.btnAddMember.Location = new System.Drawing.Point(254, 12);
+            this.btnAddMember.Location = new System.Drawing.Point(696, 47);
             this.btnAddMember.Name = "btnAddMember";
             this.btnAddMember.Size = new System.Drawing.Size(115, 29);
             this.btnAddMember.TabIndex = 6;
-            this.btnAddMember.Text = "Add Member";
+            this.btnAddMember.Text = "Group detail";
             this.btnAddMember.UseVisualStyleBackColor = true;
             this.btnAddMember.Click += new System.EventHandler(this.btnAddMember_Click);
             // 
@@ -102,7 +104,7 @@
             // 
             this.flowLayoutPanel.AutoScroll = true;
             this.flowLayoutPanel.BackColor = System.Drawing.SystemColors.Window;
-            this.flowLayoutPanel.Location = new System.Drawing.Point(12, 56);
+            this.flowLayoutPanel.Location = new System.Drawing.Point(12, 82);
             this.flowLayoutPanel.Name = "flowLayoutPanel";
             this.flowLayoutPanel.Padding = new System.Windows.Forms.Padding(1);
             this.flowLayoutPanel.Size = new System.Drawing.Size(222, 335);
@@ -112,16 +114,35 @@
             // 
             this.flowLayoutMessage.AutoScroll = true;
             this.flowLayoutMessage.BackColor = System.Drawing.SystemColors.Window;
-            this.flowLayoutMessage.Location = new System.Drawing.Point(254, 56);
+            this.flowLayoutMessage.Location = new System.Drawing.Point(254, 82);
             this.flowLayoutMessage.Name = "flowLayoutMessage";
             this.flowLayoutMessage.Size = new System.Drawing.Size(557, 335);
             this.flowLayoutMessage.TabIndex = 8;
+            // 
+            // btnInformation
+            // 
+            this.btnInformation.Location = new System.Drawing.Point(254, 12);
+            this.btnInformation.Name = "btnInformation";
+            this.btnInformation.Size = new System.Drawing.Size(94, 29);
+            this.btnInformation.TabIndex = 9;
+            this.btnInformation.Text = "Information";
+            this.btnInformation.UseVisualStyleBackColor = true;
+            this.btnInformation.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(12, 47);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(222, 27);
+            this.txtSearch.TabIndex = 10;
             // 
             // ChatContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(848, 465);
+            this.ClientSize = new System.Drawing.Size(848, 505);
+            this.Controls.Add(this.txtSearch);
+            this.Controls.Add(this.btnInformation);
             this.Controls.Add(this.flowLayoutMessage);
             this.Controls.Add(this.flowLayoutPanel);
             this.Controls.Add(this.btnAddMember);
@@ -148,5 +169,7 @@
         private Button btnAddMember;
         private FlowLayoutPanel flowLayoutPanel;
         private FlowLayoutPanel flowLayoutMessage;
+        private Button btnInformation;
+        private TextBox txtSearch;
     }
 }

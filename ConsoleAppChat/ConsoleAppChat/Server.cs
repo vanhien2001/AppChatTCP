@@ -6,6 +6,7 @@ using ConsoleAppChat.Controllers;
 using ConsoleAppChat.Models;
 using System.Collections.Generic;
 using ConsoleAppChat.DataType;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleAppChat
 {
@@ -14,7 +15,7 @@ namespace ConsoleAppChat
         IPEndPoint iep;
         //TcpListener server;
         Socket server;
-        string IP, Port = "6969";
+        string IP= "192.168.1.127", Port = "6969";
         bool active = false;
         private MyDBContext db = new MyDBContext();
         Dictionary<int, List<GroupMember>> ListConversation;
@@ -25,14 +26,14 @@ namespace ConsoleAppChat
             Console.WriteLine("-------------------------------------- App Chat TCP ----------------------------\n");
             string hostName = Dns.GetHostName();
             Console.WriteLine("Hostname : " + hostName);
-            foreach (IPAddress ip in Dns.GetHostByName(hostName).AddressList)
-            {
-                if (ip.ToString().Contains("."))
-                {
-                    IP = ip.ToString();
-                    break;
-                }
-            }
+            //foreach (IPAddress ip in Dns.GetHostByName(hostName).AddressList)
+            //{
+            //    if (ip.ToString().Contains("."))
+            //    {
+            //        IP = ip.ToString();
+            //        break;
+            //    }
+            //}
             active = true;
 
             iep = new IPEndPoint(IPAddress.Parse(IP), int.Parse(Port));
@@ -53,6 +54,7 @@ namespace ConsoleAppChat
                     Socket client = server.Accept();
                     //TcpClient client = server.AcceptTcpClient();
                     var t = new Thread(() => ThreadClient(client));
+                    t.IsBackground = true;
                     t.Start();
                 }
                 catch (Exception e)
@@ -75,7 +77,7 @@ namespace ConsoleAppChat
             while (listen)
             {
 
-                byte[] dataRec = new byte[10240];
+                byte[] dataRec = new byte[2048000];
                 //StreamReader sr = new StreamReader(client.GetStream());
 
                 int recv = client.Receive(dataRec);

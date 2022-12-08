@@ -8,6 +8,7 @@ using System.Drawing.Printing;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection.Emit;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace ClientAppChat
         public Action action;
         FormSignIn f;
         CreateConversation fCreateConversation;
+        UserInfor fUserInfor;
         AddMember fAddMember;
 
         public ChatContainer(User user, Socket client, FormSignIn f)
@@ -46,7 +48,7 @@ namespace ClientAppChat
             bool exit = false;
             while (!exit)
             {
-                byte[] data = new byte[20480];
+                byte[] data = new byte[2048000];
                 int recv = client.Receive(data);
                 if (recv == 0) return;
                 string jsonString = Encoding.ASCII.GetString(data, 0, recv);
@@ -59,12 +61,12 @@ namespace ClientAppChat
                         case "CreateConversation":
                             if (res.success)
                             {
-                                if(fCreateConversation != null)
+                                if (fCreateConversation != null)
                                 {
                                     MessageBox.Show(res.message, "");
                                     fCreateConversation.BeginInvoke(new MethodInvoker(() =>
                                     {
-                                        fCreateConversation.Close();
+                                        fCreateConversation.Hide();
                                     }));
                                 }
                                 this.getListConversation();
@@ -79,7 +81,7 @@ namespace ClientAppChat
                                     MessageBox.Show(res.message, "");
                                     fAddMember.BeginInvoke(new MethodInvoker(() =>
                                     {
-                                        fAddMember.Close();
+                                        fAddMember.Hide();
                                     }));
                                 }
                                 else MessageBox.Show("Fail!\n" + res.message, "Error");
@@ -144,34 +146,52 @@ namespace ClientAppChat
         }
         public void renderListConversation(string data)
         {
-            flowLayoutPanel.BeginInvoke(new MethodInvoker(() =>
+            if (InvokeRequired)
             {
-                flowLayoutPanel.Controls.Clear();
-                flowLayoutPanel.Padding = new Padding(5);
-                btnAddMember.Enabled = false;
-                btnSend.Enabled = false;
-                LabelConversation.AutoSize = false;
-                LabelConversation.TextAlign = ContentAlignment.MiddleRight;
-            }));
+                try { this.Invoke(new Action<string>(renderListConversation), new object[] { data }); }
+                catch (Exception) { }
+                return;
+            }
+            flowLayoutPanel.Controls.Clear();
+            flowLayoutPanel.Padding = new Padding(5);
+            btnSend.Enabled = false;
+            LabelConversation.AutoSize = false;
+            LabelConversation.TextAlign = ContentAlignment.MiddleRight;
+            //flowLayoutPanel.BeginInvoke(new MethodInvoker(() =>
+            //{
+            //}));
             List<Conversation> conversations = new List<Conversation>();
             conversations = JsonSerializer.Deserialize<List<Conversation>>(data);
             foreach (var conversation in conversations)
             {
                 Label label = new Label();
                 label.Size = new Size(180, 40);
-                label.Padding = new Padding(10);
+                label.Padding = new Padding(10, 10, 10, 10);
                 label.Cursor = Cursors.Hand;
                 label.AutoSize = false;
-                label.TextAlign = ContentAlignment.MiddleLeft;
+                btnAddMember.Hide();
+                label.TextAlign = ContentAlignment.MiddleCenter;
+                label.ImageAlign = ContentAlignment.MiddleLeft;
                 label.Name = conversation.Id.ToString();
-                label.Text = conversation.Name;
+                if (conversation.Group)
+                {
+                    label.Text = conversation.Name;
+                    Image image1 = Image.FromFile("D:\\Học lập trình\\AppChatTCP\\ClientAppChat\\Icon\\group.png");
+                    label.Image = (Image)(new Bitmap(image1, new Size(30, 30))); ;
+                }
+                else
+                {
+                    label.Text = conversation.groupMembers.First().user.Name;
+                    Image image1 = Image.FromFile("D:\\Học lập trình\\AppChatTCP\\ClientAppChat\\Icon\\user.jpg");
+                    label.Image = (Image)(new Bitmap(image1, new Size(30, 30))); ;
+                }
                 label.Click += onClick;
                 label.MouseEnter += onEnter;
                 label.MouseLeave += onLeave;
-                flowLayoutPanel.BeginInvoke(new MethodInvoker(() =>
-                {
-                    flowLayoutPanel.Controls.Add(label);
-                }));
+                //flowLayoutPanel.BeginInvoke(new MethodInvoker(() =>
+                //{
+                //}));
+                flowLayoutPanel.Controls.Add(label);
             }
         }
 
@@ -181,9 +201,18 @@ namespace ClientAppChat
             {
                 flowLayoutMessage.Controls.Clear();
                 txtMessage.Focus();
-                LabelConversation.Text = conversation.Name;
                 btnAddMember.Enabled = true;
                 btnSend.Enabled = true;
+                if (conversation.Group)
+                {
+                    btnAddMember.Show();
+                    LabelConversation.Text = conversation.Name;
+                }
+                else
+                {
+                    btnAddMember.Hide();
+                    LabelConversation.Text = conversation.groupMembers.First().user.Name;
+                }
             }));
             foreach (var message in conversation.messages)
             {
@@ -237,14 +266,28 @@ namespace ClientAppChat
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
-            fCreateConversation = new CreateConversation(user, client);
-            fCreateConversation.Show();
+            if (fCreateConversation != null)
+            {
+                fCreateConversation.Show();
+            }
+            else
+            {
+                fCreateConversation = new CreateConversation(user, client);
+                fCreateConversation.Show();
+            }
         }
 
         private void btnAddMember_Click(object sender, EventArgs e)
         {
-            fAddMember = new AddMember(conversation, client);
-            fAddMember.Show();
+            if (fAddMember != null)
+            {
+                fAddMember.Show();
+            }
+            else
+            {
+                fAddMember = new AddMember(conversation, client);
+                fAddMember.Show();
+            }
         }
 
         private void LabelConversation_Click(object sender, EventArgs e)
@@ -274,6 +317,12 @@ namespace ClientAppChat
             {
                 MessageBox.Show("Please enter name", "Notice");
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            fUserInfor = new UserInfor(user, client);
+            fUserInfor.Show();
         }
     }
 }

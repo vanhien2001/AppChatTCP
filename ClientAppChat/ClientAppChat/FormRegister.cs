@@ -17,7 +17,7 @@ namespace ClientAppChat
     {
         Socket client;
         IPEndPoint iep;
-        string IP, Port = "6969";
+        string IP= "192.168.1.127", Port = "6969";
         public FormRegister()
         {
             InitializeComponent();
@@ -26,16 +26,16 @@ namespace ClientAppChat
 
         private void Connect()
         {
-            string hostName = Dns.GetHostName();
-            Console.WriteLine(hostName);
-            foreach (IPAddress ip in Dns.GetHostByName(hostName).AddressList)
-            {
-                if (ip.ToString().Contains("."))
-                {
-                    IP = ip.ToString();
-                    break;
-                }
-            }
+            //string hostName = Dns.GetHostName();
+            //Console.WriteLine(hostName);
+            //foreach (IPAddress ip in Dns.GetHostByName(hostName).AddressList)
+            //{
+            //    if (ip.ToString().Contains("."))
+            //    {
+            //        IP = ip.ToString();
+            //        break;
+            //    }
+            //}
             iep = new IPEndPoint(IPAddress.Parse(IP), int.Parse(Port));
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             client.Connect(iep);
@@ -60,10 +60,10 @@ namespace ClientAppChat
 
         private void btnRegister_Click(object sender, EventArgs e)
         {
-            if (txtUsername.Text != "" || txtPassword.Text != "" || txtEmail.Text != "" || txtName.Text != "")
+            if (txtUsername.Text != "" || txtPassword.Text != "" || txtPhone.Text != "" || txtName.Text != "" || txtPhone.Text != "")
             {
                 Action action = new Action(client);
-                Response res = action.Register(new User(txtName.Text, txtUsername.Text, txtPassword.Text, txtEmail.Text));
+                Response res = action.Register(new User(txtName.Text, txtUsername.Text, txtPassword.Text, txtPhone.Text, txtPhone.Text));
                 if (res != null)
                 {
                     if (res.success)

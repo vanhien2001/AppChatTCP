@@ -30,5 +30,6 @@ namespace ClientAppChat.Models
         public int ConversationId { get; set; }
         public string userEmail { get; set; }
         public User user { get; set; }
+        public DateTime date { get; set; }
     }
 }

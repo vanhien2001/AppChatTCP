@@ -32,6 +32,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
             this.btnCreate = new System.Windows.Forms.Button();
+            this.txtInfor = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -62,7 +65,7 @@
             // 
             // btnCreate
             // 
-            this.btnCreate.Location = new System.Drawing.Point(57, 215);
+            this.btnCreate.Location = new System.Drawing.Point(57, 336);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(195, 29);
             this.btnCreate.TabIndex = 3;
@@ -70,11 +73,39 @@
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
             // 
+            // txtInfor
+            // 
+            this.txtInfor.Location = new System.Drawing.Point(57, 278);
+            this.txtInfor.Name = "txtInfor";
+            this.txtInfor.Size = new System.Drawing.Size(195, 27);
+            this.txtInfor.TabIndex = 5;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(57, 241);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(160, 20);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Emai / phone number :";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(57, 206);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(165, 20);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "---------- Or ------------";
+            // 
             // CreateConversation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(306, 300);
+            this.ClientSize = new System.Drawing.Size(306, 398);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.txtInfor);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnCreate);
             this.Controls.Add(this.txtName);
             this.Controls.Add(this.label2);
@@ -92,5 +123,8 @@
         private Label label2;
         private TextBox txtName;
         private Button btnCreate;
+        private TextBox txtInfor;
+        private Label label3;
+        private Label label4;
     }
 }
