@@ -214,7 +214,7 @@ namespace ClientAppChat
                 if (conversation.Group)
                 {
                     label.Text = "        " + conversation.Name;
-                    Image image1 = Image.FromFile("D:\\Học lập trình\\AppChatTCP\\ClientAppChat\\Icon\\group.png");
+                    Image image1 = Image.FromFile(@"..\\..\\..\\IconApp\\group.png");
                     label.Image = (Image)(new Bitmap(image1, new Size(30, 30))); ;
                 }
                 else
@@ -227,7 +227,7 @@ namespace ClientAppChat
                     {
                         label.Text = "        " + conversation.groupMembers.First().user.Name;
                     }
-                    Image image1 = Image.FromFile("D:\\Học lập trình\\AppChatTCP\\ClientAppChat\\Icon\\user.jpg");
+                    Image image1 = Image.FromFile(@"..\\..\\..\\IconApp\\user.jpg");
                     label.Image = (Image)(new Bitmap(image1, new Size(30, 30))); ;
                 }
                 label.Click += onClick;
