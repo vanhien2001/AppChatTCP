@@ -7,21 +7,22 @@ using System.Threading.Tasks;
 
 namespace ConsoleAppChat.DataType
 {
-    public class ConversationData
+    public class ConversationDTO
     {
-        public ConversationData()
+        public ConversationDTO()
         {
         }
-        public ConversationData(int id, string name, User user, DateTime dateCreate, List<MessageData> messages, List<GroupMemberData> groupMembers)
+        public ConversationDTO(int id, string name, User user, Boolean group, DateTime dateCreate, List<MessageDTO> messages, List<GroupMemberDTO> groupMembers)
         {
             this.Id = id;
             this.Name = name;
             this.user = user;
+            this.Group= group;
             this.dateCreate = dateCreate;
             this.messages = messages;
             this.groupMembers = groupMembers;
         }
-        public ConversationData(string name, User user)
+        public ConversationDTO(string name, User user)
         {
             this.Name = name;
             this.user = user;
@@ -29,8 +30,9 @@ namespace ConsoleAppChat.DataType
         public int Id { get; set; }
         public string Name { get; set; }
         public User user { get; set; }
+        public Boolean Group { get; set; }
         public DateTime dateCreate { get; set; }
-        public List<MessageData> messages { get; set; }
-        public List<GroupMemberData> groupMembers { get; set; }
+        public List<MessageDTO> messages { get; set; }
+        public List<GroupMemberDTO> groupMembers { get; set; }
     }
 }

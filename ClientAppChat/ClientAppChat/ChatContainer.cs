@@ -29,6 +29,7 @@ namespace ClientAppChat
         CreateConversation fCreateConversation;
         UserInfor fUserInfor;
         AddMember fAddMember;
+        List<int> listClientConnect;
 
         public ChatContainer(User user, Socket client, FormSignIn f)
         {
@@ -42,6 +43,8 @@ namespace ClientAppChat
             trd = new Thread(new ThreadStart(this.ThreadTask));
             trd.IsBackground = true;
             trd.Start();
+            btnAddMember.Hide();
+            txtStatus.Hide();
         }
         private void ThreadTask()
         {
@@ -58,6 +61,13 @@ namespace ClientAppChat
                 {
                     switch (res.action)
                     {
+                        case "GetListClientConnect":
+                            listClientConnect = JsonSerializer.Deserialize<List<int>>(res.data);
+                            if (conversation != null)
+                            {
+                                renderMessages(conversation);
+                            }
+                            break;
                         case "CreateConversation":
                             if (res.success)
                             {
@@ -66,7 +76,7 @@ namespace ClientAppChat
                                     MessageBox.Show(res.message, "");
                                     fCreateConversation.BeginInvoke(new MethodInvoker(() =>
                                     {
-                                        fCreateConversation.Hide();
+                                        fCreateConversation.Close();
                                     }));
                                 }
                                 this.getListConversation();
@@ -79,10 +89,11 @@ namespace ClientAppChat
                                 if (res.success)
                                 {
                                     MessageBox.Show(res.message, "");
-                                    fAddMember.BeginInvoke(new MethodInvoker(() =>
-                                    {
-                                        fAddMember.Hide();
-                                    }));
+                                    //fAddMember.BeginInvoke(new MethodInvoker(() =>
+                                    //{
+                                    //    fAddMember.Close();
+                                    //}));
+                                    action.GetConversationById(conversation.Id);
                                 }
                                 else MessageBox.Show("Fail!\n" + res.message, "Error");
                             }
@@ -92,6 +103,10 @@ namespace ClientAppChat
                             if (res.success)
                             {
                                 conversation = JsonSerializer.Deserialize<Conversation>(res.data);
+                                if (fAddMember != null)
+                                {
+                                    fAddMember.renderListMembers(conversation);
+                                }
                                 renderMessages(conversation);
                             }
                             else MessageBox.Show("Fail!\n" + res.message, "Error");
@@ -99,7 +114,6 @@ namespace ClientAppChat
                         case "GetConversationByIdUser":
                             if (res.success)
                             {
-                                //MessageBox.Show(res.data, "");
                                 renderListConversation(res.data);
                             }
                             else MessageBox.Show("Fail!\n" + res.message, "Error");
@@ -129,6 +143,31 @@ namespace ClientAppChat
                                         }));
                                     }
                                 }
+                            }
+                            else MessageBox.Show("Fail!\n" + res.message, "Error");
+                            break;
+                        case "UpdateUserInfor":
+                            if (res.success)
+                            {
+                                MessageBox.Show(res.message, "");
+                                action.GetUserById(user.Id);
+                            }
+                            else MessageBox.Show("Fail!\n" + res.message, "Error");
+                            break;
+                        case "GetUserById":
+                            if (res.success)
+                            {
+                                user = JsonSerializer.Deserialize<User>(res.data);
+                                fUserInfor.updateInfor(user);
+                                LableName.Text = user.Name;
+                            }
+                            else MessageBox.Show("Fail!\n" + res.message, "Error");
+                            break;
+                        case "DeleteMember":
+                            if (res.success)
+                            {
+                                MessageBox.Show(res.message, "");
+                                action.GetConversationById(conversation.Id);
                             }
                             else MessageBox.Show("Fail!\n" + res.message, "Error");
                             break;
@@ -169,19 +208,25 @@ namespace ClientAppChat
                 label.Padding = new Padding(10, 10, 10, 10);
                 label.Cursor = Cursors.Hand;
                 label.AutoSize = false;
-                btnAddMember.Hide();
-                label.TextAlign = ContentAlignment.MiddleCenter;
+                label.TextAlign = ContentAlignment.MiddleLeft;
                 label.ImageAlign = ContentAlignment.MiddleLeft;
                 label.Name = conversation.Id.ToString();
                 if (conversation.Group)
                 {
-                    label.Text = conversation.Name;
+                    label.Text = "        " + conversation.Name;
                     Image image1 = Image.FromFile("D:\\Học lập trình\\AppChatTCP\\ClientAppChat\\Icon\\group.png");
                     label.Image = (Image)(new Bitmap(image1, new Size(30, 30))); ;
                 }
                 else
                 {
-                    label.Text = conversation.groupMembers.First().user.Name;
+                    if (conversation.groupMembers.First().user.Id == user.Id)
+                    {
+                        label.Text = "        " + conversation.groupMembers.Last().user.Name;
+                    }
+                    else
+                    {
+                        label.Text = "        " + conversation.groupMembers.First().user.Name;
+                    }
                     Image image1 = Image.FromFile("D:\\Học lập trình\\AppChatTCP\\ClientAppChat\\Icon\\user.jpg");
                     label.Image = (Image)(new Bitmap(image1, new Size(30, 30))); ;
                 }
@@ -206,12 +251,23 @@ namespace ClientAppChat
                 if (conversation.Group)
                 {
                     btnAddMember.Show();
+                    txtStatus.Hide();
                     LabelConversation.Text = conversation.Name;
                 }
                 else
                 {
                     btnAddMember.Hide();
-                    LabelConversation.Text = conversation.groupMembers.First().user.Name;
+                    txtStatus.Show();
+                    if (conversation.groupMembers.First().user.Id == user.Id)
+                    {
+                        LabelConversation.Text = conversation.groupMembers.Last().user.Name;
+                        txtStatus.Text = listClientConnect.Contains(conversation.groupMembers.Last().user.Id) ? "Online" : "Offline";
+                    }
+                    else
+                    {
+                        LabelConversation.Text = conversation.groupMembers.First().user.Name;
+                        txtStatus.Text = listClientConnect.Contains(conversation.groupMembers.First().user.Id) ? "Online" : "Offline";
+                    }
                 }
             }));
             foreach (var message in conversation.messages)
@@ -266,28 +322,28 @@ namespace ClientAppChat
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
-            if (fCreateConversation != null)
-            {
-                fCreateConversation.Show();
-            }
-            else
-            {
-                fCreateConversation = new CreateConversation(user, client);
-                fCreateConversation.Show();
-            }
+            //if (fCreateConversation != null)
+            //{
+            //    fCreateConversation.Show();
+            //}
+            //else
+            //{
+            fCreateConversation = new CreateConversation(user, client);
+            fCreateConversation.Show();
+            //}
         }
 
         private void btnAddMember_Click(object sender, EventArgs e)
         {
-            if (fAddMember != null)
-            {
-                fAddMember.Show();
-            }
-            else
-            {
-                fAddMember = new AddMember(conversation, client);
-                fAddMember.Show();
-            }
+            //if (fAddMember != null)
+            //{
+            //    fAddMember.Show();
+            //}
+            //else
+            //{
+            fAddMember = new AddMember(conversation, listClientConnect, client);
+            fAddMember.Show();
+            //}
         }
 
         private void LabelConversation_Click(object sender, EventArgs e)

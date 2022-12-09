@@ -10,7 +10,7 @@ namespace ConsoleAppChat.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlServer("Server=LENOVO_L340\\HKDPM;Database=AppChat;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Server=LENOVO_L340;Database=AppChat;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
         }
         public DbSet<User> User { get; set; } = null!;
         public DbSet<Conversation> Conversation { get; set; } = null!;

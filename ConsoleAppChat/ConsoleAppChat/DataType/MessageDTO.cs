@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleAppChat.DataType
 {
-    public class MessageData
+    public class MessageDTO
     {
-        public MessageData() { }
-        public MessageData(int id, int conversationId, User user, string text, DateTime date)
+        public MessageDTO() { }
+        public MessageDTO(int id, int conversationId, User user, string text, DateTime date)
         {
             Id = id;
             ConversationId = conversationId;

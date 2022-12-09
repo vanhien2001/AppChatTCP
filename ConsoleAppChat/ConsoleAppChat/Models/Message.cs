@@ -9,7 +9,7 @@ namespace ConsoleAppChat.Models
 {
     public class Message
     {
-        [Required]
+        [Key]
         public int Id { get; set; }
 
         [Required]

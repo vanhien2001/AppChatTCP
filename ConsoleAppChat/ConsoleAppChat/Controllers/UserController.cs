@@ -23,5 +23,13 @@ namespace ConsoleAppChat.Controllers
             _context.User.Add(user);
             _context.SaveChanges();
         }
+        public void Update(User userInfor)
+        {
+            User user = _context.User.SingleOrDefault(u => u.Id == userInfor.Id);
+            user.PhoneNumber = userInfor.PhoneNumber;
+            user.Email = userInfor.Email;
+            user.Name= userInfor.Name;
+            _context.SaveChanges();
+        }
     }
 }

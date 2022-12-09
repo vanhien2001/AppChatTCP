@@ -6,7 +6,6 @@ using ConsoleAppChat.Controllers;
 using ConsoleAppChat.Models;
 using System.Collections.Generic;
 using ConsoleAppChat.DataType;
-using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleAppChat
 {
@@ -15,7 +14,7 @@ namespace ConsoleAppChat
         IPEndPoint iep;
         //TcpListener server;
         Socket server;
-        string IP= "192.168.1.127", Port = "6969";
+        string IP = "192.168.1.127", Port = "6969";
         bool active = false;
         private MyDBContext db = new MyDBContext();
         Dictionary<int, List<GroupMember>> ListConversation;
@@ -26,16 +25,17 @@ namespace ConsoleAppChat
             Console.WriteLine("-------------------------------------- App Chat TCP ----------------------------\n");
             string hostName = Dns.GetHostName();
             Console.WriteLine("Hostname : " + hostName);
-            //foreach (IPAddress ip in Dns.GetHostByName(hostName).AddressList)
-            //{
-            //    if (ip.ToString().Contains("."))
-            //    {
-            //        IP = ip.ToString();
-            //        break;
-            //    }
-            //}
+            foreach (IPAddress ip in Dns.GetHostByName(hostName).AddressList)
+            {
+                if (ip.ToString().Contains("."))
+                {
+                    //IP = ip.ToString();
+                    break;
+                }
+            }
             active = true;
 
+            //iep = new IPEndPoint(IPAddress.Parse("192.168.28.188"), int.Parse(Port));
             iep = new IPEndPoint(IPAddress.Parse(IP), int.Parse(Port));
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             server.Bind(iep);
@@ -53,8 +53,8 @@ namespace ConsoleAppChat
                 {
                     Socket client = server.Accept();
                     //TcpClient client = server.AcceptTcpClient();
+                    Console.WriteLine("Client connect !");
                     var t = new Thread(() => ThreadClient(client));
-                    t.IsBackground = true;
                     t.Start();
                 }
                 catch (Exception e)
@@ -77,7 +77,7 @@ namespace ConsoleAppChat
             while (listen)
             {
 
-                byte[] dataRec = new byte[2048000];
+                byte[] dataRec = new byte[10240];
                 //StreamReader sr = new StreamReader(client.GetStream());
 
                 int recv = client.Receive(dataRec);
@@ -94,16 +94,27 @@ namespace ConsoleAppChat
                     switch (req.action)
                     {
                         case "Login":
-                            UserData login = JsonSerializer.Deserialize<UserData>(req.data);
+                            UserDTO login = JsonSerializer.Deserialize<UserDTO>(req.data);
                             userLogin = db.User.FirstOrDefault(user => user.UserName == login.UserName);
                             if (userLogin != null)
                             {
                                 if (userLogin.Password.Equals(login.Password))
                                 {
-                                    res = new Response("Login", true, "Login successfully !", JsonSerializer.Serialize(new UserData(userLogin)));
+                                    res = new Response("Login", true, "Login successfully !", JsonSerializer.Serialize(new UserDTO(userLogin)));
                                     sendJson(client, res);
+                                    Console.WriteLine("Client connect !");
                                     ListClient.Remove(userLogin.Id);
                                     ListClient.Add(userLogin.Id, client);
+                                    List<int> idClients= new List<int>();
+                                    foreach ( int idClient in ListClient.Keys)
+                                    {
+                                        idClients.Add(idClient);
+                                    }
+                                    foreach (int idClient in ListClient.Keys)
+                                    {
+                                        res = new Response("GetListClientConnect", true, "", JsonSerializer.Serialize(idClients));
+                                        sendJson(ListClient[idClient], res);
+                                    }
                                 }
                                 else
                                 {
@@ -118,20 +129,20 @@ namespace ConsoleAppChat
                             }
                             break;
                         case "Register":
-                            UserData register = JsonSerializer.Deserialize<UserData>(req.data);
+                            UserDTO register = JsonSerializer.Deserialize<UserDTO>(req.data);
                             User userCheck = db.User.FirstOrDefault(user => user.UserName == register.UserName);
                             if (userCheck == null)
                             {
-                                User userCheck2 = db.User.FirstOrDefault(user => user.Email == register.Email);
+                                User userCheck2 = db.User.FirstOrDefault(user => user.Email == register.Email || user.PhoneNumber == register.PhoneNumber);
                                 if (userCheck2 == null)
                                 {
                                     try
                                     {
-                                        userController.Add(new User() { Name = register.Name, UserName = register.UserName, Password = register.Password, Email = register.Email });
+                                        userController.Add(new User() { Name = register.Name, UserName = register.UserName, Password = register.Password, PhoneNumber = register.PhoneNumber, Email = register.Email });
                                         res = new Response("Register", true, "Register successfully !", "");
                                         sendJson(client, res);
                                     }
-                                    catch(Exception e)
+                                    catch (Exception e)
                                     {
                                         res = new Response("Register", false, "Server error \n" + e.Message, "");
                                         sendJson(client, res);
@@ -139,7 +150,7 @@ namespace ConsoleAppChat
                                 }
                                 else
                                 {
-                                    res = new Response("Register", false, "Email has already been taken", "");
+                                    res = new Response("Register", false, "Email or phone number has already been taken", "");
                                     sendJson(client, res);
                                 }
                             }
@@ -150,17 +161,17 @@ namespace ConsoleAppChat
                             }
                             break;
                         case "CreateConversation":
-                            ConversationData data = JsonSerializer.Deserialize<ConversationData>(req.data);
+                            ConversationDTO data = JsonSerializer.Deserialize<ConversationDTO>(req.data);
                             if (data != null)
                             {
                                 try
                                 {
-                                    conversationController.Add(new Conversation() { Name = data.Name, IdUserCreate = data.user.Id, dateCreate = DateTime.Now });
-                                    
+                                    conversationController.Add(new Conversation() { Name = data.Name, IdUserCreate = data.user.Id, dateCreate = DateTime.Now, Group = true });
+
                                     Conversation conversationNew = db.Conversation.FirstOrDefault(c => c.Name == data.Name && c.IdUserCreate == data.user.Id);
-                                    groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = conversationNew.IdUserCreate , date = DateTime.Now});
+                                    groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = conversationNew.IdUserCreate, date = DateTime.Now });
                                     res = new Response("CreateConversation", true, "Create conversation successfully", "");
-                                    
+
                                     sendJson(client, res);
                                     getListConversation();
                                 }
@@ -176,9 +187,53 @@ namespace ConsoleAppChat
                                 sendJson(client, res);
                             }
                             break;
+                        case "CreateConversationPrivate":
+                            ConversationPrivateDTO data1 = JsonSerializer.Deserialize<ConversationPrivateDTO>(req.data);
+                            if (data1 != null)
+                            {
+                                try
+                                {
+                                    User user2 = db.User.SingleOrDefault(user => user.Email == data1.user2.Email || user.PhoneNumber == data1.user2.PhoneNumber);
+                                    if (user2 != null)
+                                    {
+                                        conversationController.Add(new Conversation() { Name = data1.user1.Id + " - " + user2.Id, IdUserCreate = data1.user1.Id, dateCreate = DateTime.Now, Group = false });
+
+                                        Conversation conversationNew = db.Conversation.FirstOrDefault(c => c.Name == data1.user1.Id + " - " + user2.Id && c.IdUserCreate == data1.user1.Id);
+                                        groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = data1.user1.Id, date = DateTime.Now });
+                                        groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = user2.Id, date = DateTime.Now });
+                                        res = new Response("CreateConversation", true, "Create conversation successfully", "");
+
+                                        if (ListClient.ContainsKey(data1.user1.Id))
+                                        {
+                                            sendJson(ListClient[data1.user1.Id], res);
+                                        }
+                                        if (ListClient.ContainsKey(user2.Id))
+                                        {
+                                            sendJson(ListClient[user2.Id], res);
+                                        }
+                                        getListConversation();
+                                    }
+                                    else
+                                    {
+                                        res = new Response("CreateConversation", false, "Can't find user", "");
+                                        sendJson(client, res);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    res = new Response("CreateConversation", false, e.Message, "");
+                                    sendJson(client, res);
+                                }
+                            }
+                            else
+                            {
+                                res = new Response("CreateConversation", false, "Missing data", "");
+                                sendJson(client, res);
+                            }
+                            break;
                         case "AddMember":
-                            GroupMemberData gm = JsonSerializer.Deserialize<GroupMemberData>(req.data);
-                            User user = db.User.SingleOrDefault(user => user.Email == gm.userEmail);
+                            GroupMemberDTO gm = JsonSerializer.Deserialize<GroupMemberDTO>(req.data);
+                            User user = db.User.SingleOrDefault(user => user.Email == gm.user.Email || user.PhoneNumber == gm.user.PhoneNumber);
                             if (user != null)
                             {
                                 GroupMember gmCheck = db.GroupMember.SingleOrDefault(g => g.ConversationId == gm.ConversationId && g.UserId == user.Id);
@@ -191,13 +246,13 @@ namespace ConsoleAppChat
                                         sendJson(client, res);
                                         getListConversation();
                                         res = new Response("CreateConversation", true, "Create conversation successfully", "");
-                                        foreach (var groupMember in ListConversation[gm.ConversationId])
-                                        {
-                                            if (ListClient.ContainsKey(groupMember.UserId))
+                                        //foreach (var groupMember in ListConversation[gm.ConversationId])
+                                        //{
+                                            if (ListClient.ContainsKey(user.Id))
                                             {
-                                                sendJson(ListClient[groupMember.UserId], res);
+                                                sendJson(ListClient[user.Id], res);
                                             }
-                                        }
+                                        //}
                                     }
                                     catch (Exception e)
                                     {
@@ -223,19 +278,19 @@ namespace ConsoleAppChat
                             if (conversation != null)
                             {
                                 User userCreate = userController.GetById(conversation.IdUserCreate);
-                                List<GroupMemberData> groupMemberDatas = new List<GroupMemberData>();
+                                List<GroupMemberDTO> groupMemberDatas = new List<GroupMemberDTO>();
                                 List<GroupMember> groupMembers = groupMemberController.GetByIdConversation(conversation.Id);
                                 foreach (var groupMember in groupMembers)
                                 {
-                                    groupMemberDatas.Add(new GroupMemberData(groupMember.Id, groupMember.ConversationId, userController.GetById(groupMember.UserId), groupMember.date));
+                                    groupMemberDatas.Add(new GroupMemberDTO(groupMember.Id, groupMember.ConversationId, userController.GetById(groupMember.UserId), groupMember.date));
                                 }
-                                List<MessageData> messagesData = new List<MessageData>();
+                                List<MessageDTO> messagesData = new List<MessageDTO>();
                                 List<Message> messages = messageController.GetByIdConversation(conversation.Id);
                                 foreach (var message in messages)
                                 {
-                                    messagesData.Add(new MessageData(message.Id, message.ConversationId, userController.GetById(message.UserId), message.Text, message.Date));
+                                    messagesData.Add(new MessageDTO(message.Id, message.ConversationId, userController.GetById(message.UserId), message.Text, message.Date));
                                 }
-                                ConversationData conversationData = new ConversationData(conversation.Id, conversation.Name, userCreate, conversation.dateCreate, messagesData, groupMemberDatas);
+                                ConversationDTO conversationData = new ConversationDTO(conversation.Id, conversation.Name, userCreate, conversation.Group, conversation.dateCreate, messagesData, groupMemberDatas);
                                 res = new Response("GetConversationById", true, "Get successfully !", JsonSerializer.Serialize(conversationData));
                                 sendJson(client, res);
                             }
@@ -247,24 +302,24 @@ namespace ConsoleAppChat
                             break;
                         case "GetConversationByIdUser":
                             int idUser = JsonSerializer.Deserialize<int>(req.data);
-                            List<ConversationData> conversationsData = new List<ConversationData>();
+                            List<ConversationDTO> conversationsData = new List<ConversationDTO>();
                             List<Conversation> conversations = conversationController.GetAllByIdUser(idUser);
                             foreach (var c in conversations)
                             {
                                 User userCreate = userController.GetById(c.IdUserCreate);
-                                List<GroupMemberData> groupMemberDatas = new List<GroupMemberData>();
+                                List<GroupMemberDTO> groupMemberDatas = new List<GroupMemberDTO>();
                                 List<GroupMember> groupMembers = groupMemberController.GetByIdConversation(c.Id);
                                 foreach (var groupMember in groupMembers)
                                 {
-                                    groupMemberDatas.Add(new GroupMemberData(groupMember.Id, groupMember.ConversationId, userController.GetById(groupMember.UserId), groupMember.date));
+                                    groupMemberDatas.Add(new GroupMemberDTO(groupMember.Id, groupMember.ConversationId, userController.GetById(groupMember.UserId), groupMember.date));
                                 }
-                                List<MessageData> messagesData = new List<MessageData>();
+                                List<MessageDTO> messagesData = new List<MessageDTO>();
                                 List<Message> messages = messageController.GetByIdConversation(c.Id);
                                 foreach (var message in messages)
                                 {
-                                    messagesData.Add(new MessageData(message.Id, message.ConversationId, userController.GetById(message.UserId), message.Text, message.Date));
+                                    messagesData.Add(new MessageDTO(message.Id, message.ConversationId, userController.GetById(message.UserId), message.Text, message.Date));
                                 }
-                                conversationsData.Add(new ConversationData(c.Id, c.Name, userCreate, c.dateCreate, messagesData, groupMemberDatas));
+                                conversationsData.Add(new ConversationDTO(c.Id, c.Name, userCreate, c.Group, c.dateCreate, messagesData, groupMemberDatas));
                             }
                             try
                             {
@@ -278,7 +333,7 @@ namespace ConsoleAppChat
                             }
                             break;
                         case "SendMessage":
-                            MessageData messageData = JsonSerializer.Deserialize<MessageData>(req.data);
+                            MessageDTO messageData = JsonSerializer.Deserialize<MessageDTO>(req.data);
                             if (messageData != null)
                             {
                                 try
@@ -286,9 +341,9 @@ namespace ConsoleAppChat
                                     Message message = new Message() { ConversationId = messageData.ConversationId, UserId = messageData.user.Id, Text = messageData.Text, Date = DateTime.Now };
                                     messageController.Add(message);
                                     Message messageNew = db.Message.FirstOrDefault(m => m.ConversationId == message.ConversationId && m.UserId == message.UserId && m.Date == message.Date);
-                                    MessageData messageResponse = new MessageData(messageNew.Id, messageNew.ConversationId, userController.GetById(messageNew.UserId), messageNew.Text, messageNew.Date);
+                                    MessageDTO messageResponse = new MessageDTO(messageNew.Id, messageNew.ConversationId, userController.GetById(messageNew.UserId), messageNew.Text, messageNew.Date);
                                     res = new Response("SendMessage", true, "Send message successfully", JsonSerializer.Serialize(messageResponse));
-                                    foreach ( var groupMember in ListConversation[messageData.ConversationId])
+                                    foreach (var groupMember in ListConversation[messageData.ConversationId])
                                     {
                                         if (ListClient.ContainsKey(groupMember.UserId))
                                         {
@@ -308,11 +363,92 @@ namespace ConsoleAppChat
                                 sendJson(client, res);
                             }
                             break;
+                        case "GetUserById":
+                            int idU = JsonSerializer.Deserialize<int>(req.data);
+                            if (idU != null)
+                            {
+                                try
+                                {
+                                    User a =  userController.GetById(idU);
+                                    if(a != null)
+                                    {
+                                        res = new Response("GetUserById", true, "Get successfully !", JsonSerializer.Serialize(a));
+                                        sendJson(client, res);
+                                    }
+                                    else
+                                    {
+                                        res = new Response("GetUserById", false, "Can't find user !", "");
+                                        sendJson(client, res);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    res = new Response("GetUserById", false, e.Message, "");
+                                    sendJson(client, res);
+                                }
+                            }
+                            else
+                            {
+                                res = new Response("GetUserById", false, "Missing data", "");
+                                sendJson(client, res);
+                            }
+                            break;
+                        case "UpdateUserInfor":
+                            User userInfor = JsonSerializer.Deserialize<User>(req.data);
+                            if (userInfor != null)
+                            {
+                                try
+                                {
+                                    userController.Update(userInfor);
+                                    res = new Response("UpdateUserInfor", true, "Update successfully !", "");
+                                    sendJson(client, res);
+                                }
+                                catch (Exception e)
+                                {
+                                    res = new Response("UpdateUserInfor", false, e.Message, "");
+                                    sendJson(client, res);
+                                }
+                            }
+                            else
+                            {
+                                res = new Response("UpdateUserInfor", false, "Missing data", "");
+                                sendJson(client, res);
+                            }
+                            break;
+                        case "DeleteMember":
+                            int gmId = JsonSerializer.Deserialize<int>(req.data);
+                            if (gmId != null)
+                            {
+                                try
+                                {
+                                    var gm1 = groupMemberController.GetById(gmId);
+                                    groupMemberController.Delete(gmId);
+                                    if (ListClient.ContainsKey(gm1.UserId))
+                                    {
+                                        res = new Response("CreateConversation", true, "", "");
+                                        sendJson(ListClient[gm1.UserId], res);
+                                    }
+                                    res = new Response("DeleteMember", true, "Delete successfully !", "");
+                                    sendJson(client, res);
+                                }
+                                catch (Exception e)
+                                {
+                                    res = new Response("DeleteMember", false, e.Message, "");
+                                    sendJson(client, res);
+                                }
+                            }
+                            else
+                            {
+                                res = new Response("UpdateUserInfor", false, "Missing data", "");
+                                sendJson(client, res);
+                            }
+                            break;
                         case "Exit":
-                            if(userLogin.Id != null)
+                            if (userLogin.Id != null)
                             {
                                 Console.WriteLine("\nClient ngat ket noi : " + userLogin.Id);
                                 ListClient.Remove(userLogin.Id);
+                                res = new Response("Exit", false, "User disconnect : " + userLogin.Id, "");
                             }
                             client.Close();
                             listen = false;
@@ -327,7 +463,6 @@ namespace ConsoleAppChat
         private void sendJson(Socket client, object obj)
         {
             byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
-
             client.Send(jsonUtf8Bytes, jsonUtf8Bytes.Length, SocketFlags.None);
             //StreamWriter sw = new StreamWriter(client.GetStream());
             //String S = Encoding.ASCII.GetString(jsonUtf8Bytes, 0, jsonUtf8Bytes.Length);

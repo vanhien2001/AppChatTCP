@@ -4,6 +4,7 @@ using ConsoleAppChat.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConsoleAppChat.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221208121617_adjustUserBD")]
+    partial class adjustUserBD
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +32,6 @@ namespace ConsoleAppChat.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<bool>("Group")
-                        .HasColumnType("bit");
-
                     b.Property<int>("IdUserCreate")
                         .HasColumnType("int");
 
@@ -46,6 +45,28 @@ namespace ConsoleAppChat.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Conversation");
+                });
+
+            modelBuilder.Entity("ConsoleAppChat.Models.ConversationPrivate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("IdUser1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUser2")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("dateCreate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConversationPrivate");
                 });
 
             modelBuilder.Entity("ConsoleAppChat.Models.GroupMember", b =>

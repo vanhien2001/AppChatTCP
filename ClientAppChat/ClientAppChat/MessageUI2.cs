@@ -19,7 +19,7 @@ namespace ClientAppChat
         {
             this.message = message;
             InitializeComponent();
-            labelName.Text = message.user.Name + " (" + message.Date.ToString("HH:mm tt dd/MM/yyyy") + ") :";
+            labelName.Text = "Bạn (" + message.Date.ToString("HH:mm tt dd/MM/yyyy") + ") :";
             labelText.Text = message.Text;
             //labelText.AutoSize = false;
             labelText.TextAlign = ContentAlignment.MiddleRight;

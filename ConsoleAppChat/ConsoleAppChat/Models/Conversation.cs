@@ -4,7 +4,7 @@ namespace ConsoleAppChat.Models
 {
     public class Conversation
     {
-        [Required]
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -12,6 +12,9 @@ namespace ConsoleAppChat.Models
 
         [Required]
         public int IdUserCreate { get; set; }
+
+        [Required]
+        public Boolean Group { get; set; }
 
         [Required]
         public DateTime dateCreate { get; set; }

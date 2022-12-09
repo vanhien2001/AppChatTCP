@@ -65,9 +65,9 @@ namespace ClientAppChat
             Request req = new Request("CreateConversationPrivate", jsonString);
             sendJson(req);
         }
-        public void AddMember(int id, string email)
+        public void AddMember(int id, string infor)
         {
-            string jsonString = JsonSerializer.Serialize(new { ConversationId = id, userEmail = email});
+            string jsonString = JsonSerializer.Serialize(new { ConversationId = id, user = new { Email = infor, PhoneNumber = infor } });
             Request req = new Request("AddMember", jsonString);
             sendJson(req);
         }
@@ -88,6 +88,24 @@ namespace ClientAppChat
         {
             string jsonString = JsonSerializer.Serialize(new { ConversationId  = conversationId, user = new { Id = user.Id }, Text = text });
             Request req = new Request("SendMessage", jsonString);
+            sendJson(req);
+        }
+        public void GetUserById(int userId)
+        {
+            string jsonString = JsonSerializer.Serialize(userId);
+            Request req = new Request("GetUserById", jsonString);
+            sendJson(req);
+        }
+        public void UpdateUserInfor(User user)
+        {
+            string jsonString = JsonSerializer.Serialize(user);
+            Request req = new Request("UpdateUserInfor", jsonString);
+            sendJson(req);
+        }
+        public void DeleteMember(int id)
+        {
+            string jsonString = JsonSerializer.Serialize(id);
+            Request req = new Request("DeleteMember", jsonString);
             sendJson(req);
         }
         public void Exit()

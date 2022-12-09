@@ -38,6 +38,7 @@
             this.flowLayoutMessage = new System.Windows.Forms.FlowLayoutPanel();
             this.btnInformation = new System.Windows.Forms.Button();
             this.txtSearch = new System.Windows.Forms.TextBox();
+            this.txtStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LableName
@@ -136,11 +137,21 @@
             this.txtSearch.Size = new System.Drawing.Size(222, 27);
             this.txtSearch.TabIndex = 10;
             // 
+            // txtStatus
+            // 
+            this.txtStatus.AutoSize = true;
+            this.txtStatus.Location = new System.Drawing.Point(761, 51);
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.Size = new System.Drawing.Size(50, 20);
+            this.txtStatus.TabIndex = 11;
+            this.txtStatus.Text = "label1";
+            // 
             // ChatContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(848, 505);
+            this.Controls.Add(this.txtStatus);
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.btnInformation);
             this.Controls.Add(this.flowLayoutMessage);
@@ -171,5 +182,6 @@
         private FlowLayoutPanel flowLayoutMessage;
         private Button btnInformation;
         private TextBox txtSearch;
+        private Label txtStatus;
     }
 }

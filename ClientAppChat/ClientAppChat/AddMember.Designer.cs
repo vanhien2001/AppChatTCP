@@ -101,17 +101,18 @@
             this.flowLayoutPanel1.BackColor = System.Drawing.SystemColors.Window;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(295, 101);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(426, 378);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(562, 378);
             this.flowLayoutPanel1.TabIndex = 6;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(605, 65);
+            this.label4.Location = new System.Drawing.Point(741, 68);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(116, 20);
             this.label4.TabIndex = 7;
             this.label4.Text = "Group members";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // txtCreatedBy
             // 
@@ -158,7 +159,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(739, 514);
+            this.ClientSize = new System.Drawing.Size(881, 514);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.txtDateCreate);
             this.Controls.Add(this.text);
