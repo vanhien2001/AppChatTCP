@@ -22,6 +22,8 @@ import {
   ScrollView,
   TextInputSubmitEditingEventData,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import moment from 'moment';
 
 const ConversationMessage = () => {
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -30,6 +32,7 @@ const ConversationMessage = () => {
   const authState = useAppSelector(state => state.auth.current);
   const [text, setText] = useState('');
   const homeNavigation = useNavigation<HomeScreenNavigationProp>();
+  const userActiveState = useAppSelector(state => state.userActive.current);
 
   useEffect(() => {
     const fetchConversation = async () => {
@@ -44,19 +47,38 @@ const ConversationMessage = () => {
   useEffect(() => {
     homeNavigation.setOptions({
       headerRight: () => (
-        <Menu
-          trigger={triggerProps => (
-            <Pressable {...triggerProps}>
-              <ThreeDotsIcon />
-            </Pressable>
+        <Pressable
+          onPress={() =>
+            homeNavigation.navigate('ConversationSetting', {
+              groupName: messageState?.Name,
+              createdBy: messageState?.user.Name,
+              dataCreated: messageState?.dateCreate,
+              user: messageState?.groupMembers,
+              conversationId: route.params?.conversationId,
+            })
+          }>
+          <ThreeDotsIcon />
+        </Pressable>
+      ),
+      headerTitle: () => (
+        <View style={tw`flex-row items-center`}>
+          {route.params?.avatar === 'group' ? (
+            <Avatar size={35} style={tw`bg-gray-300`}>
+              <Icon name="groups" size={25} style={tw`text-gray-500`} />
+            </Avatar>
+          ) : (
+            <Avatar
+              size={35}
+              source={{
+                uri: `https://ui-avatars.com/api/?background=random&color=fff&name=${route.params?.avatar}`,
+              }}>
+              {userActiveState.includes(item.user.Id) ? (
+                <Avatar.Badge bg="green.500" />
+              ) : null}
+            </Avatar>
           )}
-          placement="bottom right">
-          <Menu.Item>Arial</Menu.Item>
-          <Menu.Item>Nunito Sans</Menu.Item>
-          <Menu.Item>Roboto</Menu.Item>
-          <Menu.Item>Poppins</Menu.Item>
-          <Menu.Item>SF Pro</Menu.Item>
-        </Menu>
+          <Text style={tw`ml-2 text-lg`}>{route.params?.name}</Text>
+        </View>
       ),
     });
   }, [homeNavigation]);
@@ -93,64 +115,39 @@ const ConversationMessage = () => {
               {messageState?.messages.map((item, index, array) => {
                 if (authState.Id === item.user.Id) {
                   if (
-                    index !== array.length - 1 &&
-                    array[index + 1].user.Id !== item.user.Id &&
-                    array[index - 1].user.Id !== item.user.Id
-                  ) {
-                    return (
-                      // stand alone message
-                      <View
-                        key={item.Id}
-                        style={tw`w-full pr-1 mb-[1px] flex-row justify-end `}>
-                        <View style={tw`bg-blue-400 py-2 px-3 rounded-full`}>
-                          <Text style={tw`text-white`}>{item.Text}</Text>
-                        </View>
-                      </View>
-                    );
-                  } else if (
                     index !== 0 &&
-                    array[index - 1].user.Id !== item.user.Id
-                  ) {
-                    return (
-                      // first not standalone message
-                      <View
-                        key={item.Id}
-                        style={tw`w-full pr-1 mb-[1px] flex-row justify-end`}>
-                        <View
-                          style={tw`bg-blue-400 py-2 px-3 rounded-full rounded-br-lg`}>
-                          <Text style={tw`text-white text-base`}>
-                            {item.Text}
-                          </Text>
-                        </View>
-                      </View>
-                    );
-                  } else if (
                     index !== array.length - 1 &&
-                    array[index + 1].user.Id === item.user.Id
+                    index <= array.length - 1
                   ) {
-                    return (
-                      // not standalone message
-                      <View
-                        key={item.Id}
-                        style={tw`w-full pr-1 mb-[1px] flex-row justify-end`}>
+                    if (array[index + 1].user.Id === item.user.Id) {
+                      return (
                         <View
-                          style={tw`bg-blue-400 py-2 px-3 rounded-full rounded-br-lg rounded-tr-lg `}>
-                          <Text style={tw`text-white text-base`}>
-                            {item.Text}
-                          </Text>
+                          key={item.Id}
+                          style={tw`w-full pr-1 mb-1px flex-row justify-end `}>
+                          <View
+                            style={tw`bg-blue-400 py-2 px-3 rounded-full flex-row items-baseline`}>
+                            <Text style={tw`text-white text-[10px] mr-1`}>
+                              {moment().format('hh:mm')}
+                            </Text>
+                            <Text style={tw`text-base text-white`}>
+                              {item.Text}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                    );
+                      );
+                    }
                   }
 
                   return (
-                    // last message from host
                     <View
                       key={item.Id}
-                      style={tw`w-full mb-5 pr-1 flex-row justify-end`}>
+                      style={tw`w-full pr-1 mb-4 flex-row justify-end `}>
                       <View
-                        style={tw`bg-blue-400 py-2 px-3 rounded-full rounded-tr-lg`}>
-                        <Text style={tw`text-white text-base`}>
+                        style={tw`bg-blue-400 py-2 px-3 rounded-full flex-row items-baseline`}>
+                        <Text style={tw`text-white text-[10px] mr-1`}>
+                          {moment().format('hh:mm')}
+                        </Text>
+                        <Text style={tw`text-base text-white`}>
                           {item.Text}
                         </Text>
                       </View>
@@ -158,76 +155,47 @@ const ConversationMessage = () => {
                   );
                 } else {
                   //!guest message
-
                   if (
-                    index !== array.length - 1 &&
-                    array[index + 1].user.Id !== item.user.Id &&
-                    array[index - 1].user.Id !== item.user.Id
-                  ) {
-                    return (
-                      // stand alone message
-                      <View
-                        key={item.Id}
-                        style={tw`w-full pr-1 mb-[1px] flex-row justify-start`}>
-                        <Avatar
-                          size="sm"
-                          style={tw`mr-2 ml-2`}
-                          source={{
-                            uri: `https://ui-avatars.com/api/?background=random&color=fff&name=${item.user.Name}`,
-                          }}
-                        />
-                        <View style={tw`bg-gray-300 py-2 px-3 rounded-full`}>
-                          <Text style={tw`text-base`}>{item.Text}</Text>
-                        </View>
-                      </View>
-                    );
-                  } else if (
                     index !== 0 &&
-                    array[index - 1].user.Id !== item.user.Id
-                  ) {
-                    return (
-                      // first not standalone message
-                      <View
-                        key={item.Id}
-                        style={tw`w-full pr-1 mb-[1px] flex-row justify-start`}>
-                        <View
-                          style={tw`bg-gray-300 py-2 px-3 rounded-full rounded-bl-lg ml-12`}>
-                          <Text style={tw`text-base`}>{item.Text}</Text>
-                        </View>
-                      </View>
-                    );
-                  } else if (
                     index !== array.length - 1 &&
-                    array[index + 1].user.Id === item.user.Id
+                    index <= array.length - 1
                   ) {
-                    return (
-                      // not standalone message
-                      <View
-                        key={item.Id}
-                        style={tw`w-full pr-1 mb-[1px] flex-row justify-start`}>
+                    if (array[index + 1].user.Id === item.user.Id) {
+                      return (
                         <View
-                          style={tw`bg-gray-300 py-2 px-3 rounded-full rounded-bl-lg rounded-tl-lg ml-12`}>
-                          <Text style={tw`text-base`}>{item.Text}</Text>
+                          key={item.Id}
+                          style={tw`w-full pl-12 mb-[1px] flex-row justify-start`}>
+                          <View
+                            style={tw`bg-gray-300 py-2 px-3 rounded-full flex-row items-baseline`}>
+                            <Text style={tw`text-base mr-1`}>{item.Text}</Text>
+                            <Text style={tw`text-[10px]`}>
+                              {moment().format('hh:mm')}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                    );
+                      );
+                    }
                   }
-
                   return (
-                    // last message from host
                     <View
                       key={item.Id}
-                      style={tw`w-full mb-5 pr-1 flex-row justify-start`}>
+                      style={tw`w-full pr-1 mb-4 flex-row justify-start `}>
                       <Avatar
                         size="sm"
                         style={tw`mr-2 ml-2`}
                         source={{
                           uri: `https://ui-avatars.com/api/?background=random&color=fff&name=${item.user.Name}`,
-                        }}
-                      />
+                        }}>
+                        {userActiveState.includes(item.user.Id) ? (
+                          <Avatar.Badge bg="green.500" />
+                        ) : null}
+                      </Avatar>
                       <View
-                        style={tw`bg-gray-300 py-2 px-3 rounded-full rounded-tl-lg`}>
-                        <Text style={tw`text-base`}>{item.Text}</Text>
+                        style={tw`bg-gray-300 py-2 px-3 rounded-full flex-row items-baseline`}>
+                        <Text style={tw`text-base mr-1`}>{item.Text}</Text>
+                        <Text style={tw`text-[10px]`}>
+                          {moment().format('hh:mm')}
+                        </Text>
                       </View>
                     </View>
                   );

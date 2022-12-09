@@ -5,6 +5,7 @@ interface IConversation {
   Name: string;
   user: IUser;
   dateCreate: string;
+  Group: boolean;
   messages: {
     ConversationId: number;
     Date: string;

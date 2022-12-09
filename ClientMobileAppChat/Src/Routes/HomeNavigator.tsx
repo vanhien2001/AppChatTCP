@@ -7,13 +7,30 @@ import React from 'react';
 import AddChatGroup from '../Feature/AddChat/AddChatGroup';
 import AddChatPrivate from '../Feature/AddChat/AddChatPrivate';
 import ConversationMessage from '../Feature/Conversation/ConversationMessage';
+import ConversationSetting from '../Feature/Conversation/ConversationSetting';
+import UpdateUser from '../Feature/Setting/UpdateUser';
+import IUser from '../Interface/User';
 import HomeTab from './HomeTab';
 
 export type HomeStackParamList = {
   Home: undefined;
-  ConversationDetail: { conversationId: number };
+  ConversationDetail: { conversationId: number; avatar: string; name: string };
   AddChatPrivate: undefined;
   AddChatGroup: undefined;
+  UpdateUser: undefined;
+  ConversationSetting: {
+    groupName?: string;
+    createdBy?: string;
+    dataCreated?: string;
+    conversationId?: number;
+    user?: {
+      Id: number;
+      ConversationId: number;
+      userEmail: null;
+      user: IUser;
+      date: string;
+    }[];
+  };
 };
 
 export type HomeScreenNavigationProp =
@@ -30,6 +47,11 @@ const HomeNavigator = () => {
       <Stack.Screen name="ConversationDetail" component={ConversationMessage} />
       <Stack.Screen name="AddChatPrivate" component={AddChatPrivate} />
       <Stack.Screen name="AddChatGroup" component={AddChatGroup} />
+      <Stack.Screen name="UpdateUser" component={UpdateUser} />
+      <Stack.Screen
+        name="ConversationSetting"
+        component={ConversationSetting}
+      />
     </Stack.Navigator>
   );
 };

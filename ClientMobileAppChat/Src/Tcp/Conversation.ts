@@ -1,36 +1,45 @@
 import authTcp from './AuthTcp';
-import { store } from '../Context/store';
 
 const conversationTcp = {
-  createConversation: async (data: { username: string; password: string }) => {
-    const clientTcp = authTcp.getClient();
-    if (clientTcp) {
-      const object = {
-        action: 'CreateConversation',
-        data,
-      };
-
-      const decodeObject = {
-        action: object.action,
-        data: JSON.stringify(object.data),
-      };
-      await clientTcp.write(JSON.stringify(decodeObject));
-    }
-  },
-
   getConversationByUserId: async (data: number) => {
     const clientTcp = authTcp.getClient();
     if (clientTcp) {
       const object = {
         action: 'GetConversationByIdUser',
-        data,
+        data: data.toString(),
       };
 
-      const decodeObject = {
-        action: object.action,
-        data: JSON.stringify(object.data),
+      const decodeObject = await JSON.stringify(object);
+      await clientTcp.write(decodeObject);
+    }
+  },
+
+  addMember: async (data: {
+    ConversationId: number;
+    user: { Email: string; PhoneNumber: string };
+  }) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
+      const object = {
+        action: 'AddMember',
+        data: JSON.stringify(data),
       };
-      await clientTcp.write(JSON.stringify(decodeObject));
+
+      const decodeObject = await JSON.stringify(object);
+      await clientTcp.write(decodeObject);
+    }
+  },
+
+  deleteMember: async (data: number) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
+      const object = {
+        action: 'DeleteMember',
+        data: data.toString(),
+      };
+
+      const decodeObject = await JSON.stringify(object);
+      await clientTcp.write(decodeObject);
     }
   },
 
@@ -39,14 +48,10 @@ const conversationTcp = {
     if (clientTcp) {
       const object = {
         action: 'GetConversationById',
-        data,
+        data: data.toString(),
       };
-
-      const decodeObject = {
-        action: object.action,
-        data: JSON.stringify(object.data),
-      };
-      await clientTcp.write(JSON.stringify(decodeObject));
+      const decodeObject = await JSON.stringify(object);
+      await clientTcp.write(decodeObject);
     }
   },
 
@@ -59,6 +64,41 @@ const conversationTcp = {
     if (clientTcp) {
       const object = {
         action: 'SendMessage',
+        data,
+      };
+
+      const decodeObject = {
+        action: object.action,
+        data: JSON.stringify(object.data),
+      };
+      await clientTcp.write(JSON.stringify(decodeObject));
+    }
+  },
+
+  createConversationPrivate: async (data: {
+    user1: { Id: number };
+    user2: { PhoneNumber: string; Email: string };
+  }) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
+      const object = {
+        action: 'CreateConversationPrivate',
+        data,
+      };
+
+      const decodeObject = {
+        action: object.action,
+        data: JSON.stringify(object.data),
+      };
+      await clientTcp.write(JSON.stringify(decodeObject));
+    }
+  },
+
+  createConversation: async (data: { Name: string; user: { Id: number } }) => {
+    const clientTcp = authTcp.getClient();
+    if (clientTcp) {
+      const object = {
+        action: 'CreateConversation',
         data,
       };
 

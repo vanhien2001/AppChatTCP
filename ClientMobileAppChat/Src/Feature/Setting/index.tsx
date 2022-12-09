@@ -22,6 +22,13 @@ const Setting = () => {
 
   return (
     <View style={tw`bg-white h-full`}>
+      <TouchableOpacity onPress={() => homeNavigation.navigate('UpdateUser')}>
+        <View style={tw`h-16 flex-row items-center px-6`}>
+          <Icon name="person" size={25} style={tw`text-gray-500`} />
+          <Text style={tw`text-lg font-medium pl-4`}>Profile</Text>
+        </View>
+      </TouchableOpacity>
+
       <TouchableOpacity
         onPress={() => homeNavigation.navigate('AddChatPrivate')}>
         <View style={tw`h-16 flex-row items-center px-6`}>

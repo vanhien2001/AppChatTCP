@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { View, SafeAreaView } from 'react-native';
 import tw from 'twrnc';
 import {
@@ -15,12 +15,15 @@ import {
   CloseIcon,
   Text,
   Divider,
+  WarningOutlineIcon,
+  Pressable,
 } from 'native-base';
 import { Controller, Control, FieldErrorsImpl } from 'react-hook-form';
 import { LoginFormSubmit } from '..';
 import { GestureResponderEvent } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthScreenNavigationProp } from '../../../../Routes/AuthRoutes';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface ILoginLayout {
   error: string;
@@ -33,6 +36,7 @@ interface ILoginLayout {
 const LoginLayout: FC<ILoginLayout> = props => {
   const { error, errors, control, handleSubmit, isLoading } = props;
   const authNavigate = useNavigation<AuthScreenNavigationProp>();
+  const [show, setShow] = useState(false);
 
   return (
     <SafeAreaView>
@@ -84,7 +88,7 @@ const LoginLayout: FC<ILoginLayout> = props => {
                 <Box style={tw`mb-5`}>
                   <FormControl
                     isDisabled={isLoading}
-                    isInvalid={errors.username?.message !== '' ? true : false}>
+                    isInvalid={errors.username ? true : false}>
                     <FormControl.Label>Username</FormControl.Label>
                     <Controller
                       name="username"
@@ -100,34 +104,54 @@ const LoginLayout: FC<ILoginLayout> = props => {
                       )}
                     />
                     {errors.username && (
-                      <Text style={tw`text-red-500`}>
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
+                        style={tw`text-red-500`}>
                         {errors.username.message}
-                      </Text>
-                    )}
-                  </FormControl>
-                </Box>
-                <Box style={tw`mb-7`}>
-                  <FormControl isDisabled={isLoading} isInvalid>
-                    <FormControl.Label>Password</FormControl.Label>
-                    <Controller
-                      name="password"
-                      control={control}
-                      render={({ field: { onChange, onBlur, value } }) => (
-                        <Input
-                          size="l"
-                          onChangeText={onChange}
-                          onBlur={onBlur}
-                          value={value}
-                          autoCapitalize={'none'}
-                        />
-                      )}
-                    />
-                    {errors.password && (
-                      <FormControl.ErrorMessage style={tw`text-red-500`}>
-                        {errors.password.message}
                       </FormControl.ErrorMessage>
                     )}
                   </FormControl>
+                </Box>
+
+                <Box style={tw`mb-7`}>
+                  <Controller
+                    name="password"
+                    control={control}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <>
+                        <FormControl
+                          isDisabled={isLoading}
+                          isInvalid={errors.password ? true : false}>
+                          <FormControl.Label>Password</FormControl.Label>
+                          <Input
+                            size="l"
+                            onChangeText={onChange}
+                            onBlur={onBlur}
+                            value={value}
+                            autoCapitalize={'none'}
+                            type={show ? 'text' : 'password'}
+                            InputRightElement={
+                              <Pressable onPress={() => setShow(!show)}>
+                                <Icon
+                                  name={show ? 'visibility' : 'visibility-off'}
+                                  size={20}
+                                  style={tw`mr-2 text-gray-400`}
+                                  color="muted.400"
+                                />
+                              </Pressable>
+                            }
+                          />
+                          {errors.password && (
+                            <FormControl.ErrorMessage
+                              leftIcon={<WarningOutlineIcon size="xs" />}
+                              style={tw`text-red-500`}>
+                              {errors.password.message}
+                            </FormControl.ErrorMessage>
+                          )}
+                        </FormControl>
+                      </>
+                    )}
+                  />
                 </Box>
                 <Box>
                   <Button isLoading={isLoading} onPress={handleSubmit}>

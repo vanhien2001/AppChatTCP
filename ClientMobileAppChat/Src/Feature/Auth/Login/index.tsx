@@ -38,19 +38,23 @@ const Login = () => {
   const onSubmit = async (data: LoginFormSubmit) => {
     console.log(IP_ADDRESS);
     setIsLoading(true);
-    authTcp.login(data, async resData => {
+
+    await authTcp.login(data, async resData => {
       if (resData.success) {
         if (resData.data) {
           const { data } = resData;
+          console.log(data);
           await dispatch(
             logIn({
               Email: data.Email,
               Name: data.Name,
               Id: data.Id,
+              UserName: data.UserName,
+              PhoneNumber: data.PhoneNumber,
             }),
           );
         }
-        homeNavigation.navigate('Home');
+        await homeNavigation.navigate('Home');
         setIsLoading(false);
       } else {
         setError(resData.message);

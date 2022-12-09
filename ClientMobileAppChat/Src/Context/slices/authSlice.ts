@@ -7,6 +7,8 @@ export interface IUserState {
     Email?: string;
     Name?: string;
     Id?: number;
+    UserName?: string;
+    PhoneNumber?: string;
     client?: TcpSocket.Socket;
   };
 
@@ -19,6 +21,8 @@ const initialState: IUserState = {
     Email: '',
     Name: undefined,
     Id: undefined,
+    UserName: undefined,
+    PhoneNumber: undefined,
     client: undefined,
   },
 };
@@ -37,12 +41,16 @@ export const AuthSlice = createSlice({
         Email: string;
         Name: string;
         Id: number;
+        UserName: string;
+        PhoneNumber: string;
       }>,
     ) => {
       state.current.isLogIn = true;
       state.current.Email = action.payload.Email;
       state.current.Name = action.payload.Name;
       state.current.Id = action.payload.Id;
+      state.current.UserName = action.payload.UserName;
+      state.current.PhoneNumber = action.payload.PhoneNumber;
     },
 
     logOut: state => {
@@ -50,6 +58,8 @@ export const AuthSlice = createSlice({
       state.current.Email = undefined;
       state.current.Name = undefined;
       state.current.Id = undefined;
+      state.current.PhoneNumber = undefined;
+      state.current.UserName = undefined;
     },
   },
 });

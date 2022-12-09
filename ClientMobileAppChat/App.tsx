@@ -16,6 +16,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { SafeAreaView } from 'react-native';
 import tw from 'twrnc';
+import Toast from 'react-native-toast-message';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <NativeBaseProvider>
           <SafeAreaView style={tw`flex-1`}>
             <RootNavigator />
+            <Toast />
           </SafeAreaView>
         </NativeBaseProvider>
       </PersistGate>
