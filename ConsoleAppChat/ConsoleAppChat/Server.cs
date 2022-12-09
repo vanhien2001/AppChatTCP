@@ -448,6 +448,18 @@ namespace ConsoleAppChat
                             {
                                 Console.WriteLine("\nClient ngat ket noi : " + userLogin.Id);
                                 ListClient.Remove(userLogin.Id);
+
+                                List<int> idClients = new List<int>();
+                                foreach (int idClient in ListClient.Keys)
+                                {
+                                    idClients.Add(idClient);
+                                }
+                                foreach (int idClient in ListClient.Keys)
+                                {
+                                    res = new Response("GetListClientConnect", true, "", JsonSerializer.Serialize(idClients));
+                                    sendJson(ListClient[idClient], res);
+                                }
+
                                 res = new Response("Exit", false, "User disconnect : " + userLogin.Id, "");
                             }
                             client.Close();
