@@ -194,24 +194,54 @@ namespace ConsoleAppChat
                                 try
                                 {
                                     User user2 = db.User.SingleOrDefault(user => user.Email == data1.user2.Email || user.PhoneNumber == data1.user2.PhoneNumber);
+
                                     if (user2 != null)
                                     {
-                                        conversationController.Add(new Conversation() { Name = data1.user1.Id + " - " + user2.Id, IdUserCreate = data1.user1.Id, dateCreate = DateTime.Now, Group = false });
-
-                                        Conversation conversationNew = db.Conversation.FirstOrDefault(c => c.Name == data1.user1.Id + " - " + user2.Id && c.IdUserCreate == data1.user1.Id);
-                                        groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = data1.user1.Id, date = DateTime.Now });
-                                        groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = user2.Id, date = DateTime.Now });
-                                        res = new Response("CreateConversation", true, "Create conversation successfully", "");
-
-                                        if (ListClient.ContainsKey(data1.user1.Id))
+                                        if (user2.Id == data1.user1.Id)
                                         {
-                                            sendJson(ListClient[data1.user1.Id], res);
+                                            res = new Response("CreateConversation", false, "Can't chat yourself", "");
+                                            sendJson(client, res);
                                         }
-                                        if (ListClient.ContainsKey(user2.Id))
+                                        else
                                         {
-                                            sendJson(ListClient[user2.Id], res);
+                                            List<Conversation> check1 = conversationController.GetAllPrivateByIdUser(data1.user1.Id);
+                                            Boolean invalid = false;
+                                            foreach (var c1 in check1)
+                                            {
+                                                List<GroupMember> check2 = groupMemberController.GetByIdConversation(c1.Id);
+                                                foreach (var c2 in check2)
+                                                {
+                                                    if (c2.UserId == user2.Id)
+                                                    {
+                                                        invalid = true;
+                                                    }
+                                                }
+                                            }
+                                            if (invalid)
+                                            {
+                                                res = new Response("CreateConversation", false, "Converastion had already exist !", "");
+                                                sendJson(client, res);
+                                            }
+                                            else
+                                            {
+                                                conversationController.Add(new Conversation() { Name = data1.user1.Id + " - " + user2.Id, IdUserCreate = data1.user1.Id, dateCreate = DateTime.Now, Group = false });
+
+                                                Conversation conversationNew = db.Conversation.FirstOrDefault(c => c.Name == data1.user1.Id + " - " + user2.Id && c.IdUserCreate == data1.user1.Id);
+                                                groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = data1.user1.Id, date = DateTime.Now });
+                                                groupMemberController.Add(new GroupMember() { ConversationId = conversationNew.Id, UserId = user2.Id, date = DateTime.Now });
+                                                res = new Response("CreateConversation", true, "Create conversation successfully", "");
+
+                                                if (ListClient.ContainsKey(data1.user1.Id))
+                                                {
+                                                    sendJson(ListClient[data1.user1.Id], res);
+                                                }
+                                                if (ListClient.ContainsKey(user2.Id))
+                                                {
+                                                    sendJson(ListClient[user2.Id], res);
+                                                }
+                                                getListConversation();
+                                            }
                                         }
-                                        getListConversation();
                                     }
                                     else
                                     {
